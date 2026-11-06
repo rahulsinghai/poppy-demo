@@ -1,0 +1,26 @@
+digraph PoppyDemo {
+  graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.55", fontname="Arial", fontsize=18, labelloc="t", label="Harbourline Bank — Poppy demonstrator deployment"];
+  node [shape=box, style="rounded,filled", fontname="Arial", fontsize=10, color="#CCD5E0", penwidth=1.2, margin="0.14,0.10"];
+  edge [fontname="Arial", fontsize=9, color="#64748B", penwidth=1.3, arrowsize=0.75];
+
+  customer [label="Customer\nBrowser / Human approval", fillcolor="#F1F5F9", color="#94A3B8"];
+  subgraph cluster_oci {
+    label="Oracle Cloud Always Free VM · Ampere A1 · ARM64";
+    style="rounded"; color="#A7B8CD"; penwidth=1.4; fontname="Arial"; fontsize=12;
+    caddy [label="Caddy HTTPS reverse proxy\nTLS · routing · security headers", fillcolor="#E9EEF5"];
+    agent [label="PERSONAL AGENT · Python / FastAPI\nDiscovery client · OAuth callback\nPoppy Session signer · approvals\nOptional LLM / Playwright", fillcolor="#E5F3FF", color="#4A90C2"];
+    gateway [label="COMPANY EDGE · Rust / Axum\nPoppy Session JWT verification\nOAuth token + scope enforcement\nOpenAPI APIs · Poppy Conversations\nBrowser-session authorisation", fillcolor="#E6F6F3", color="#23978B"];
+    bank [label="BANK PORTAL + CORE · Java 21 / Spring\nCustomer UI · OAuth AS / consent\nAccounts · transactions · cards · transfers\nCompany Agent · internal ledger APIs", fillcolor="#F0EAFE", color="#9272C5"];
+    caddy -> agent [label="agent.demo.example"];
+    caddy -> bank [label="bank.demo.example\nauth.bank.demo.example"];
+    caddy -> gateway [label="api.bank.demo.example"];
+    agent -> gateway [label="Poppy HTTPS\nSession + access token"];
+    gateway -> bank [label="Internal service calls\nverified identity + scopes"];
+  }
+  db [label="OCI MySQL HeatWave\nAlways Free · 50 GB storage\nBank + Poppy + audit schemas", fillcolor="#FFF4E5", color="#D99B3D"];
+  customer -> agent [label="Natural-language request\nconsent / approve / decline", dir=both];
+  customer -> bank [label="Human banking portal\nOAuth sign-in and consent", dir=both];
+  bank -> db [label="JDBC / TLS"];
+  gateway -> db [label="SQLx / TLS\nSession + operation state"];
+  agent -> db [style=dashed, label="Agent state only\n(encrypted token vault)"];
+}
